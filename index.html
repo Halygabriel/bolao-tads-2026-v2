@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bolão da Copa do Mundo - 1º TADS</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-badge">🏆</div>
+      <div>
+        <h1>Bolão da Copa do Mundo - 1º Período TADS</h1>
+        <p>Palpites premiados dos maiores entusiastas de futebol do IFES</p>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <div id="systemStatusBadge" class="system-badge">Carregando status...</div>
+      <div id="currentUserBadge" class="user-badge hidden"></div>
+      <button id="openAdminBtn" class="btn btn-outline">Área Admin</button>
+      <button id="logoutBtn" class="btn btn-danger hidden">Sair</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- LOGIN -->
+    <section id="loginSection" class="panel login-panel">
+      <div class="panel-header center">
+        <span class="eyebrow">ACESSO AO SISTEMA</span>
+        <h2>Escolha seu perfil</h2>
+        <p>Selecione um dos participantes para entrar no bolão.</p>
+      </div>
+
+      <div class="login-grid" id="loginUsersGrid"></div>
+    </section>
+
+    <!-- APP -->
+    <section id="appSection" class="hidden">
+      <!-- STATUS GERAL -->
+      <section class="panel compact-panel system-panel">
+        <div class="system-panel-grid">
+          <div class="system-panel-item">
+            <span class="mini-label">STATUS DO BOLÃO</span>
+            <strong id="systemStatusTitle">Aguardando</strong>
+            <p id="systemStatusText">Carregando informações do sistema...</p>
+          </div>
+
+          <div class="system-panel-item">
+            <span class="mini-label">PRÓXIMO FECHAMENTO</span>
+            <strong id="nextDeadlineTitle">--</strong>
+            <p id="nextDeadlineText">Sem data definida</p>
+          </div>
+
+          <div class="system-panel-item">
+            <span class="mini-label">PALPITES ENVIADOS</span>
+            <strong id="submissionsCount">0/5</strong>
+            <p>Participantes que já confirmaram os jogos.</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="palpitesTab">Palpites</button>
+        <button class="tab-btn" data-tab="historicoTab">Meu histórico</button>
+        <button class="tab-btn" data-tab="regrasTab">Como funciona</button>
+        <button class="tab-btn" data-tab="rankingTab">Ranking</button>
+      </div>
+
+      <!-- PALPITES -->
+      <section id="palpitesTab" class="tab-content active">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <span class="eyebrow">SEUS JOGOS</span>
+              <h2>Envie seus palpites</h2>
+              <p>
+                Cada usuário pode enviar os palpites apenas uma vez. Após o envio,
+                não será mais possível editar. Campos deixados em branco serão considerados como 0. Campos deixados em branco serão
+                considerados como 0.
+              </p>
+            </div>
+            <div id="statusBox" class="status-box"></div>
+          </div>
+
+          <div id="deadlineAlert" class="deadline-alert hidden"></div>
+
+          <form id="predictionsForm">
+            <div class="matches-grid" id="matchesGrid"></div>
+
+            <div class="form-actions">
+              <button type="submit" id="submitPredictionsBtn" class="btn btn-primary">
+                Enviar palpites
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- HISTÓRICO -->
+      <section id="historicoTab" class="tab-content">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <span class="eyebrow">SEU DESEMPENHO</span>
+              <h2>Histórico de palpites</h2>
+              <p>
+                Veja o que você enviou, os resultados oficiais e a pontuação recebida em cada jogo.
+              </p>
+            </div>
+          </div>
+
+          <div id="historyEmptyState" class="empty-state">
+            <strong>Nenhum palpite enviado ainda.</strong>
+            <p>Quando você enviar seus palpites, eles aparecerão aqui com o desempenho por partida.</p>
+          </div>
+
+          <div id="historySummary" class="history-summary hidden">
+            <div class="history-summary-card">
+              <span class="mini-label">PONTUAÇÃO TOTAL</span>
+              <strong id="historyTotalPoints">0 pts</strong>
+            </div>
+
+            <div class="history-summary-card">
+              <span class="mini-label">PLACARES ACERTADOS</span>
+              <strong id="historyExactHits">0</strong>
+            </div>
+
+            <div class="history-summary-card">
+              <span class="mini-label">ERROS</span>
+              <strong id="historyMisses">0</strong>
+            </div>
+          </div>
+
+          <div class="history-grid" id="historyGrid"></div>
+        </div>
+      </section>
+
+      <!-- PALPITES DA RODADA -->
+      <section id="rodadaTab" class="tab-content">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <span class="eyebrow">RODADA COMPLETA</span>
+              <h2>Palpites da rodada</h2>
+              <p>
+                Veja os palpites de todos os participantes, os resultados oficiais e a pontuação obtida em cada jogo.
+              </p>
+            </div>
+          </div>
+
+          <div id="roundResultsLocked" class="empty-state">
+            <strong>Resultados ainda indisponíveis.</strong>
+            <p>Todos os resultados serão divulgados após o lançamento dos placares reais.</p>
+          </div>
+
+          <div id="roundResultsSummary" class="history-summary hidden">
+            <div class="history-summary-card">
+              <span class="mini-label">USUÁRIOS NA RODADA</span>
+              <strong id="roundUsersCount">0</strong>
+            </div>
+
+            <div class="history-summary-card">
+              <span class="mini-label">JOGOS APURADOS</span>
+              <strong id="roundMatchesCount">0</strong>
+            </div>
+
+            <div class="history-summary-card">
+              <span class="mini-label">MAIOR PONTUAÇÃO</span>
+              <strong id="roundBestScore">0 pts</strong>
+            </div>
+
+            <div class="history-summary-card">
+              <span class="mini-label">STATUS</span>
+              <strong id="roundStatusText">Aguardando</strong>
+            </div>
+          </div>
+
+          <div id="roundResultsGrid" class="history-grid"></div>
+        </div>
+      </section>
+
+      <!-- COMO FUNCIONA -->
+      <section id="regrasTab" class="tab-content">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <span class="eyebrow">REGRAS DE PONTUAÇÃO</span>
+              <h2>Como funciona a pontuação</h2>
+              <p>
+                Entenda de forma simples como os pontos do bolão são calculados.
+              </p>
+            </div>
+          </div>
+
+          <div class="history-grid">
+            <article class="history-card">
+              <div class="history-card-header">
+                <span class="match-number">REGRA 1</span>
+                <span class="match-badge">3 pontos</span>
+              </div>
+
+              <div class="history-result success">
+                <span class="history-result-icon">✅</span>
+                <div>
+                  <strong>Placar exato</strong>
+                  <p>Você ganha 3 pontos quando acerta exatamente o placar completo da partida.</p>
+                  <p>Exemplo: palpite 2 x 1 e resultado oficial 2 x 1.</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="history-card">
+              <div class="history-card-header">
+                <span class="match-number">REGRA 2</span>
+                <span class="match-badge">1 ponto</span>
+              </div>
+
+              <div class="history-result warning">
+                <span class="history-result-icon">➖</span>
+                <div>
+                  <strong>Mesma diferença de gols</strong>
+                  <p>Você ganha 1 ponto quando não acerta o placar exato, mas acerta a diferença de gols da partida.</p>
+                  <p>Exemplo: palpite 1 x 0 e resultado oficial 2 x 1.</p>
+                  <p>Exemplo: palpite 2 x 0 e resultado oficial 4 x 2.</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="history-card">
+              <div class="history-card-header">
+                <span class="match-number">REGRA 3</span>
+                <span class="match-badge">0 ponto</span>
+              </div>
+
+              <div class="history-result error">
+                <span class="history-result-icon">❌</span>
+                <div>
+                  <strong>Sem pontuação</strong>
+                  <p>Quando o placar exato e a diferença de gols não forem acertados, a pontuação do jogo será 0.</p>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- RANKING -->
+      <section id="rankingTab" class="tab-content">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <span class="eyebrow">CLASSIFICAÇÃO GERAL</span>
+              <h2>Ranking do bolão</h2>
+              <p>Atualização automática após o cadastro dos resultados oficiais.</p>
+            </div>
+          </div>
+
+          <div id="leaderSpotlight" class="leader-spotlight hidden">
+            <div class="leader-medal">🥇</div>
+            <div class="leader-content">
+              <span class="mini-label">LÍDER DO BOLÃO</span>
+              <h3 id="leaderName">--</h3>
+              <p id="leaderStats">Aguardando resultados oficiais.</p>
+            </div>
+          </div>
+
+          <div class="ranking-wrapper">
+            <table class="ranking-table">
+              <thead>
+                <tr>
+                  <th>Posição</th>
+                  <th>Usuário</th>
+                  <th>Pontos</th>
+                  <th>Exatos</th>
+                  <th>Erros</th>
+                </tr>
+              </thead>
+              <tbody id="rankingTableBody"></tbody>
+            </table>
+          </div>
+
+          <div id="rankingNotice" class="ranking-notice"></div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <!-- MODAL ADMIN -->
+  <div id="adminModal" class="modal hidden">
+    <div class="modal-backdrop" id="closeAdminBackdrop"></div>
+
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <span class="eyebrow">ADMINISTRAÇÃO</span>
+          <h2>Resultados oficiais</h2>
+          <p>Cadastre os placares reais dos jogos para atualizar a pontuação.</p>
+        </div>
+        <button id="closeAdminBtn" class="icon-btn" aria-label="Fechar">✕</button>
+      </div>
+
+      <!-- LOGIN ADMIN -->
+      <div id="adminAuthSection">
+        <form id="adminLoginForm" class="admin-auth admin-auth-premium">
+          <label for="adminEmail">Acesso do administrador</label>
+
+          <div class="admin-auth-premium-row">
+            <div class="admin-input-wrap">
+              <span class="admin-input-icon">📧</span>
+              <input
+                type="email"
+                id="adminEmail"
+                placeholder="Digite o e-mail"
+                autocomplete="off"
+                required
+              />
+            </div>
+
+            <div class="admin-input-wrap admin-password-wrap">
+              <span class="admin-input-icon">🔒</span>
+              <input
+                type="password"
+                id="adminPassword"
+                placeholder="Digite a senha"
+                autocomplete="off"
+                required
+              />
+              <button type="button" id="toggleAdminPassword" class="admin-password-toggle" aria-label="Mostrar ou ocultar senha">
+                👁
+              </button>
+            </div>
+
+            <button type="submit" class="btn btn-primary admin-login-btn">Entrar</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- PAINEL ADMIN -->
+      <div id="adminPanel" class="hidden">
+        <div class="admin-tools panel-lite">
+          <div class="admin-tools-group">
+            <span class="mini-label">CONTROLE DO SISTEMA</span>
+            <div class="admin-tools-row">
+              <button type="button" id="toggleLockBtn" class="btn btn-outline">
+                Fechar palpites manualmente
+              </button>
+              <button type="button" id="exportDataBtn" class="btn btn-outline">
+                Exportar backup
+              </button>
+              <label for="importDataInput" class="btn btn-outline import-btn-label">
+                Importar backup
+              </label>
+              <input type="file" id="importDataInput" accept=".json" hidden />
+            </div>
+            <p id="adminLockStatus" class="admin-lock-status">
+              Carregando status de bloqueio...
+            </p>
+          </div>
+        </div>
+
+        <form id="adminResultsForm">
+          <div class="admin-matches" id="adminMatchesGrid"></div>
+
+          <div class="form-actions form-actions-between">
+            <button type="button" id="resetSystemBtn" class="btn btn-danger">
+              Resetar sistema
+            </button>
+
+            <div class="admin-actions-right">
+              <button type="button" id="clearResultsBtn" class="btn btn-outline-danger">
+                Limpar resultados oficiais
+              </button>
+
+              <button type="submit" class="btn btn-primary">
+                Salvar resultados oficiais
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+    <!-- TOAST -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script src="data/matches.js"></script>
+  <script type="module" src="js/app.js"></script>
+
+</body>
+</html>
